@@ -1,0 +1,62 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: loans-api
+  labels:
+    app: loans-api
+    strategy: canary
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: loans-api
+  template:
+    metadata:
+      labels:
+        app: loans-api
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8083'
+        prometheus.io/path: /metrics
+    spec:
+      containers:
+      - name: loans-api
+        image: docker.io/akshitmadanharness/loans-api:latest
+        ports:
+        - containerPort: 8083
+        env:
+        - name: ENVIRONMENT
+          value: prod-na
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 400m
+          limits:
+            memory: 1Gi
+            cpu: 800m
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8083
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8083
+          initialDelaySeconds: 5
+          periodSeconds: 5
+  minReadySeconds: 30
+  revisionHistoryLimit: 3
+  strategy:
+    canary:
+      maxSurge: 25%
+      maxUnavailable: 0
+      steps:
+      - setWeight: 10
+      - pause: {}
+      - setWeight: 25
+      - pause: {}
+      - setWeight: 50
+      - pause: {}
+      - setWeight: 100
