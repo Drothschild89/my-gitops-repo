@@ -21,14 +21,14 @@ spec:
     spec:
       containers:
       - name: loans-api
-        image: docker.io/akshitmadanharness/loans-api:latest
+        image: docker.io/akshitmadanharness/loans-api:broken-tag-123
         ports:
         - containerPort: 8083
         env:
         - name: ENVIRONMENT
           value: prod-na
         - name: TRIGGER_UPDATE
-          value: "v11"
+          value: "v12"
         resources:
           requests:
             memory: 512Mi
