@@ -28,7 +28,7 @@ spec:
         - name: ENVIRONMENT
           value: prod-na
         - name: TRIGGER_UPDATE
-          value: "v14"
+          value: "v15"
         resources:
           requests:
             memory: 128Mi
